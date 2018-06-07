@@ -84,4 +84,11 @@
 			cspVizSourceRows.appendChild(tr);
 		}
 	}
+
+	document.getElementById("csp-viz-form").addEventListener("submit", ev => {
+		ev.preventDefault();
+		const formData = new FormData(ev.target);
+		const cspPolicies = parseCspString(formData.get("csp-text"));
+		updateTable(cspPolicies);
+	});
 })();
