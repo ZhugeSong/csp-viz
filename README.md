@@ -6,12 +6,11 @@ This is a simple HTML- and JavaScript-based tool that allows you to input a [`Co
 
 ## Instructions
 
-The tool is completely written in self-contained HTML and JavaScript, so no special hosting is required.
+The tool is completely written in self-contained HTML and JavaScript, so no special hosting is required. You can run it locally by cloning this repository, or from [the version hosted on GitHub pages](https://zhugesong.github.io/csp-viz/csp-viz.html).
 
-1. `clone` this repository
-2. Open [`csp-viz.html`](./csp-viz.html) in a browser that supports ES2016 (I think)
-3. Put your CSP into the text input field
-4. Submit
+1. Open [`csp-viz.html`](./csp-viz.html) in a browser that supports ES2016 (I think)
+2. Put your CSP into the text input field
+3. Submit
 
 The page should render a table describing the CSP.
 
