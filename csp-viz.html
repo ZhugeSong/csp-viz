@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<style>
+	.allowed {
+		color: green;
+	}
+	.not-allowed {
+		color: red;
+	}
+</style>
+<div>
+	<form id="csp-viz-form">
+		<label>
+			Content-Security-Policy:
+			<input name="csp-text" type="text" />
+		</label>
+		<input type="submit" />
+	</form>
+</div>
+<div>
+	<table id="csp-viz-results">
+		<thead>
+			<tr id="csp-viz-header-row">
+			</tr>
+		</thead>
+		<tbody id="csp-viz-source-rows">
+		</tbody>
+	</table>
+</div>
+<script src="csp-viz.js"></script>
