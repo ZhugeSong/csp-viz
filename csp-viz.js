@@ -28,4 +28,60 @@
 
 		return policies;
 	}
+
+	function updateTable(policies) {
+		let directives = new Set([
+			"default-src",
+			"img-src",
+			"font-src",
+			"frame-src",
+			"script-src",
+			"style-src",
+		]);
+		let sources = new Set([
+			"'self'",
+			"'unsafe-inline'",
+			"'unsafe-eval'",
+			"data:",
+		]);
+		for(const directive in policies) {
+			directives.add(directive);
+			for(const source of policies[directive]) {
+				sources.add(source);
+			}
+		}
+
+		const cspVizHeaderRow = document.getElementById("csp-viz-header-row");
+		const cspVizSourceRows = document.getElementById("csp-viz-source-rows");
+		cspVizHeaderRow.innerHTML = "";
+		cspVizSourceRows.innerHTML = "";
+
+		for(const directive of directives) {
+			let th = document.createElement("th");
+			let code = document.createElement("code");
+			code.textContent = directive;
+			th.appendChild(code);
+			cspVizHeaderRow.appendChild(th);
+		}
+
+		for(const source of sources) {
+			let tr = document.createElement("tr");
+			for(const directive of directives) {
+				let td = document.createElement("td");
+				let allowed = false;
+				if(policies[directive] !== undefined) {
+					allowed = policies[directive].includes(source);
+				}
+				let span = document.createElement("span");
+				span.classList.add(allowed ? "allowed" : "not-allowed");
+				span.textContent = allowed ? "✔" : "✖";
+				let code = document.createElement("code");
+				code.textContent = source;
+				span.appendChild(code);
+				td.appendChild(span);
+				tr.appendChild(td);
+			}
+			cspVizSourceRows.appendChild(tr);
+		}
+	}
 })();
