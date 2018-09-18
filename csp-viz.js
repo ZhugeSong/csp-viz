@@ -1,4 +1,16 @@
 (function() {
+	function clearLog() {
+		const cspVizLog = document.getElementById("csp-viz-log");
+		cspVizLog.innerHTML = "";
+	}
+
+	function addLogItem(text) {
+		const cspVizLog = document.getElementById("csp-viz-log");
+		const logItem = document.createElement("li");
+		logItem.textContent = text;
+		cspVizLog.appendChild(logItem);
+	}
+
 	function parseCspString(cspString) {
 		if(typeof cspString !== "string") {
 			throw "cspString must be a string";
