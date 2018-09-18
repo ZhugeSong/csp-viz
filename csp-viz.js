@@ -14,7 +14,7 @@
 				continue;
 			}
 
-			const [directive, ...sources] = policyString.split(" ");
+			let [directive, ...sources] = policyString.split(" ");
 			if(sources.length === 0) {
 				// Really should have sources, but I'll allow it and treat
 				// it like 'none' since we have the empty array.
