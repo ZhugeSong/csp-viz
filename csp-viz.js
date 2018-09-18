@@ -13,7 +13,8 @@
 
 	function parseCspString(cspString) {
 		if(typeof cspString !== "string") {
-			throw "cspString must be a string";
+			addLogItem("Error: cspString must be a string");
+			return;
 		}
 
 		let policies = {};
@@ -22,17 +23,17 @@
 		for(let policyString of policyStrings) {
 			policyString = policyString.trim();
 			if(policyString.length === 0) {
-				// Skip empty policies
+				addLogItem("Warning: skipping empty policy");
 				continue;
 			}
 
 			const [directive, ...sources] = policyString.split(" ");
 			if(sources.length === 0) {
-				// Really should have sources, but I'll allow it and treat
-				// it like 'none' since we have the empty array.
+				addLogItem("Warning: treating directive \"" + directive + "\" with no sources as having source 'none'");
 			} else if(sources.includes("'none'")) {
-				// 'none' should be the only element in this case, but I'll
-				// treat it is overriding anything else in the source list.
+				if(sources.length > 1) {
+					addLogItem("Warning: policy \"" + policyString + "\" contains source \"'none'\" but also other sources; ignoring other sources");
+				}
 				sources = [];
 			}
 			policies[directive] = sources;
@@ -99,6 +100,7 @@
 
 	document.getElementById("csp-viz-form").addEventListener("submit", ev => {
 		ev.preventDefault();
+		clearLog();
 		const formData = new FormData(ev.target);
 		const cspPolicies = parseCspString(formData.get("csp-text"));
 		updateTable(cspPolicies);
