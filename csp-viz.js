@@ -55,11 +55,40 @@
 	 * @param { { [direction: string]: string[] } } policies
 	 */
 	function sourceAllowedForDirective(directive, source, policies) {
+		// Explicitly defined directive sources trump everything
 		if(policies[directive] !== undefined) {
 			return policies[directive].includes(source);
 		}
 
-		// If no explicit value, the source is not allowed
+		// Some undefined directives can inherit from others
+		const inheritanceMapping = new Map([
+			[
+				// *-src directives inherit from default-src
+				"default-src",
+				[
+					"child-src",
+					"connect-src",
+					"font-src",
+					"img-src",
+					"media-src",
+					"object-src",
+					"script-src",
+					"style-src",
+				],
+				// except frame-src, which inherits from child-src
+				"child-src",
+				[
+					"frame-src",
+				],
+			],
+		]);
+		for(const [baseDirective, derivedDirectives] of inheritanceMapping) {
+			if(derivedDirectives.includes(directive)) {
+				return sourceAllowedForDirective(baseDirective, source, policies);
+			}
+		}
+
+		// If no explicit or inherited value, the source is not allowed
 		return false;
 	}
 
