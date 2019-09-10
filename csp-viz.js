@@ -4,6 +4,9 @@
 		cspVizLog.innerHTML = "";
 	}
 
+	/**
+	 * @param {string} text
+	 */
 	function addLogItem(text) {
 		const cspVizLog = document.getElementById("csp-viz-log");
 		const logItem = document.createElement("li");
@@ -11,12 +14,16 @@
 		cspVizLog.appendChild(logItem);
 	}
 
+	/**
+	 * @param {string} cspString
+	 */
 	function parseCspString(cspString) {
 		if(typeof cspString !== "string") {
 			addLogItem("Error: cspString must be a string");
 			return;
 		}
 
+		/** @type { { [direction: string]: string[] } } */
 		let policies = {};
 
 		const policyStrings = cspString.trim().split(";");
@@ -42,6 +49,52 @@
 		return policies;
 	}
 
+	/**
+	 * @param {string} directive
+	 * @param {string} source
+	 * @param { { [direction: string]: string[] } } policies
+	 */
+	function sourceAllowedForDirective(directive, source, policies) {
+		// Explicitly defined directive sources trump everything
+		if(policies[directive] !== undefined) {
+			return policies[directive].includes(source);
+		}
+
+		// Some undefined directives can inherit from others
+		const inheritanceMapping = new Map([
+			[
+				// *-src directives inherit from default-src
+				"default-src",
+				[
+					"child-src",
+					"connect-src",
+					"font-src",
+					"img-src",
+					"media-src",
+					"object-src",
+					"script-src",
+					"style-src",
+				],
+				// except frame-src, which inherits from child-src
+				"child-src",
+				[
+					"frame-src",
+				],
+			],
+		]);
+		for(const [baseDirective, derivedDirectives] of inheritanceMapping) {
+			if(derivedDirectives.includes(directive)) {
+				return sourceAllowedForDirective(baseDirective, source, policies);
+			}
+		}
+
+		// If no explicit or inherited value, the source is not allowed
+		return false;
+	}
+
+	/**
+	 * @param { { [direction: string]: string[] } } policies
+	 */
 	function updateTable(policies) {
 		let directives = new Set([
 			"default-src",
@@ -81,10 +134,7 @@
 			let tr = document.createElement("tr");
 			for(const directive of directives) {
 				let td = document.createElement("td");
-				let allowed = false;
-				if(policies[directive] !== undefined) {
-					allowed = policies[directive].includes(source);
-				}
+				const allowed = sourceAllowedForDirective(directive, source, policies);
 				let span = document.createElement("span");
 				span.classList.add(allowed ? "allowed" : "not-allowed");
 				span.textContent = allowed ? "✔" : "✖";
