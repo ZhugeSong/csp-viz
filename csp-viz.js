@@ -4,6 +4,9 @@
 		cspVizLog.innerHTML = "";
 	}
 
+	/**
+	 * @param {string} text
+	 */
 	function addLogItem(text) {
 		const cspVizLog = document.getElementById("csp-viz-log");
 		const logItem = document.createElement("li");
@@ -11,12 +14,16 @@
 		cspVizLog.appendChild(logItem);
 	}
 
+	/**
+	 * @param {string} cspString
+	 */
 	function parseCspString(cspString) {
 		if(typeof cspString !== "string") {
 			addLogItem("Error: cspString must be a string");
 			return;
 		}
 
+		/** @type { { [direction: string]: string[] } } */
 		let policies = {};
 
 		const policyStrings = cspString.trim().split(";");
@@ -42,6 +49,9 @@
 		return policies;
 	}
 
+	/**
+	 * @param { { [direction: string]: string[] } } policies
+	 */
 	function updateTable(policies) {
 		let directives = new Set([
 			"default-src",
