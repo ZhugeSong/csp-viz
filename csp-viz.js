@@ -50,6 +50,20 @@
 	}
 
 	/**
+	 * @param {string} directive
+	 * @param {string} source
+	 * @param { { [direction: string]: string[] } } policies
+	 */
+	function sourceAllowedForDirective(directive, source, policies) {
+		if(policies[directive] !== undefined) {
+			return policies[directive].includes(source);
+		}
+
+		// If no explicit value, the source is not allowed
+		return false;
+	}
+
+	/**
 	 * @param { { [direction: string]: string[] } } policies
 	 */
 	function updateTable(policies) {
@@ -91,10 +105,7 @@
 			let tr = document.createElement("tr");
 			for(const directive of directives) {
 				let td = document.createElement("td");
-				let allowed = false;
-				if(policies[directive] !== undefined) {
-					allowed = policies[directive].includes(source);
-				}
+				const allowed = sourceAllowedForDirective(directive, source, policies);
 				let span = document.createElement("span");
 				span.classList.add(allowed ? "allowed" : "not-allowed");
 				span.textContent = allowed ? "✔" : "✖";
